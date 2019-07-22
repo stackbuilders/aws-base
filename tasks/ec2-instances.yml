@@ -1,0 +1,109 @@
+---
+- name: "Check if staging instance exist and is running... "
+  ec2_instance_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:Name": staging.yenta.findkeep.love
+      instance-state-name: running
+  register: ec2_staging_state
+
+- name: "Check if production instance exist and is running... "
+  ec2_instance_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:Name": production.yenta.findkeep.love
+      instance-state-name: running
+  register: ec2_production_state
+
+- name: "Getting VPC id... "
+  ec2_vpc_net_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:Name": "{{ vpc_name }}"
+  register: vpc
+  when: |
+    ec2_staging_state['instances'] |list |count == 0 or
+    ec2_production_state['instances'] |list |count == 0
+
+- name: "Getting vpc subnets id... "
+  ec2_vpc_subnet_facts:
+    region: "{{ region }}"
+    filters:
+      vpc-id: "{{ vpc.vpcs[0]['id'] }}"
+  register: vpc_subnets
+  when: |
+    ec2_staging_state['instances'] |list |count == 0 or
+    ec2_production_state['instances'] |list |count == 0
+    
+- name: "Getting security group id... "
+  ec2_group_facts:
+    region: "{{ region }}"
+    filters:
+      group-name: "{{ item }}_{{ aws_sgroup }}"
+  loop: [ssh, web, icmp]
+  register: group
+  when: |
+    ec2_staging_state['instances'] |list |count == 0 or
+    ec2_production_state['instances'] |list |count == 0
+
+- name: "staging.yenta.findkeep.love creation... "
+  ec2:
+    region: "{{ region }}"
+    instance_tags:
+      Name: "staging.yenta.findkeep.love"
+      Type: "application"
+      Description: "Application server"
+    exact_count: 1
+    count_tag:
+      Name: Application server
+      Description: "Application Server"
+    key_name: "{{ keypair }}"
+    group_id:
+      - "{{ group['results'][0]['security_groups'][0].group_id }}"
+      - "{{ group['results'][1]['security_groups'][0].group_id }}"
+      - "{{ group['results'][2]['security_groups'][0].group_id }}"
+    vpc_subnet_id: "{{ vpc_subnets['subnets'][0].id }}"
+    instance_type: t2.small
+    image: "{{ aws_ec2_ami }}"
+    wait: true
+    wait_timeout: 500
+    monitoring: no
+  when: ec2_staging_state['instances'] |list |count == 0
+  register: ec2_staging_create
+
+- name: "production.yenta.findkeep.love creation... "
+  ec2:
+    region: "{{ region }}"
+    instance_tags:
+      Name: "production.yenta.findkeep.love"
+      Type: "application"
+      Description: "Application server"
+    exact_count: 1
+    count_tag:
+      Name: Application server
+      Description: "Application Server"
+    key_name: "{{ keypair }}"
+    group_id:
+      - "{{ group['results'][0]['security_groups'][0].group_id }}"
+      - "{{ group['results'][1]['security_groups'][0].group_id }}"
+      - "{{ group['results'][2]['security_groups'][0].group_id }}"
+    vpc_subnet_id: "{{ vpc_subnets['subnets'][1].id }}"
+    instance_type: t2.medium
+    image: "{{ aws_ec2_ami }}"
+    wait: true
+    wait_timeout: 500
+    monitoring: no
+  when: ec2_production_state['instances'] |list |count == 0
+  register: ec2_production_create
+
+ #- debug:
+ #    msg: "ec2_{{ item[0] }}_id": "{{ item[1].instance_ids }}"
+ #  loop: "[1, 2, 3, 4, 5, 6]|zip(ec2_siteserver.results)|list"
+
+  #- name: "Saving Site Servers instance id"
+  #  set_fact:
+  #    ec2_yenta_id: "{{ ec2_yenta_id + item['instance_ids'] }}"
+  #  loop: "{{ ec2_yenta_create.results }}"
+  #  when: ec2_yenta_create is defined
+  #  tags:
+  #    - ec2_yenta

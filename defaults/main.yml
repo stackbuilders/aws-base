@@ -1,2 +1,44 @@
 ---
-# defaults file for stackbuilders.aws-provision
+# Amazon region where the resources will be provisioned.
+aws_region: us-west-2
+
+# Name of the keypair for ssh connection to the ec2 instances.
+aws_keypair: aws-provision
+
+# Added text for security groups Name tag.
+aws_sgroup_suffix: public_access
+
+# Initialize of list arrays
+ec2_sites_ids: []
+ec2_sites_eips: []
+subnets_id: []
+
+# This must not be defined!
+vpc_name: project_vpc
+igw_name: project_igw
+
+# CIDR address block first two octates
+aws_cidr_block: "172.17"
+
+# CIDR block for security groups outbound traffic.
+aws_sgroup_cidr_ip4: "0.0.0.0/0"
+aws_sgroupcidr_ip6: "::/0"
+
+# VPC and subnets cidr blocks
+aws_vpc_block: "{{ aws_cidr_block }}.0.0/20"
+aws_vpc_subnets:
+  - cidr: "{{ aws_cidr_block }}.1.0/27"
+    az: "a"
+  - cidr: "{{ aws_cidr_block }}.2.0/27"
+    az: "a"
+  - cidr: "{{ aws_cidr_block }}.3.0/27"
+    az: "b"
+  - cidr: "{{ aws_cidr_block }}.4.0/27"
+    az: "b"
+  - cidr: "{{ aws_cidr_block }}.5.0/27"
+    az: "c"
+  - cidr: "{{ aws_cidr_block }}.6.0/27"
+    az: "c"
+
+# EC2 AMI ID for the us-weast-2 region: Debian Stretch x86_64
+aws_ec2_ami: ami-09d31fc66dcb58522

@@ -1,0 +1,82 @@
+---
+- name: "VPC facts"
+  ec2_vpc_net_facts:
+    region: "{{ region }}"
+    filters:
+      "tag:Name": "{{ vpc_name }}"
+  register: vpc
+
+- name: "http/https security group"
+  ec2_group:
+    region: "{{ region }}"
+    name: "web_{{ aws_sgroup_suffix }}"
+    description: "IN TCP HTTP/HTTPS"
+    vpc_id: "{{ vpc.vpcs[0]['id'] }}"
+    tags:
+      Name: "web_{{ aws_sgroup_suffix }}"
+    state: present
+    rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: "{{ aws_cidr_block_ip4 }}"
+        cidr_ipv6: "{{ aws_cidr_block_ip6 }}"
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+        cidr_ipv6: ::/0
+  register: web_sgroup
+
+- name: "ssh security group"
+  ec2_group:
+    region: "{{ region }}"
+    name: "ssh_{{ aws_sgroup_suffix }}"
+    description: "IN TCP SSH"
+    vpc_id: "{{ vpc.vpcs[0]['id'] }}"
+    tags:
+      Name: "ssh_{{ aws_sgroup_suffix }}"
+    state: present
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+        cidr_ipv6: ::/0
+  register: ssh_sgroup
+
+- name: "mariadb security group"
+  ec2_group:
+    region: "{{ region }}"
+    name: "mariadb_{{ aws_sgroup_suffix }}"
+    description: "LAN MARIADB"
+    vpc_id: "{{ vpc.vpcs[0]['id'] }}"
+    tags:
+      Name: "mariadb_{{ aws_sgroup_suffix }}"
+    state: present
+    rules:
+      - proto: tcp
+        from_port: 3306
+        to_port: 3306
+        cidr_ip: "{{ aws_cidr_block }}.0.0/20"
+  register: mariadb_sgroup
+
+- name: "ICMP for local network security group"
+  ec2_group:
+    region: "{{ region }}"
+    name: "icmp_{{ aws_sgroup_suffix }}"
+    description: "IN/OUT ICMP"
+    vpc_id: "{{ vpc.vpcs[0]['id'] }}"
+    tags:
+      Name: "icmp_{{ aws_sgroup_suffix }}"
+    state: present
+    rules:
+      - proto: icmp
+        from_port: -1
+        to_port: -1
+        cidr_ip: "{{ aws_cidr_block }}.0.0/21"
+  register: icmp_sgroup
+
+- name: Saving ssh security group id
+  set_fact:
+    ssh_sgroup_id: "{{ ssh_sgroup.group_id }}"
