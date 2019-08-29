@@ -1,5 +1,7 @@
-Stack Builders - Debian Base
+Stack Builders - AWS provisioning.
 =========
+
+[![Build Status](https://travis-ci.org/speedlight/aws-provision.svg?branch=master)](https://travis-ci.org/speedlight/aws-provision)
 
 Generic AWS resource provisioning.
 
