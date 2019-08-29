@@ -10,12 +10,29 @@ Requirements
 - boto/boto3 
 - awscli
 
+Install
+--------------
+```sh
+ansible-galaxy install stackbuilders.aws-role
+```
 
 Role Variables
 --------------
+The important variables to set are listed below. For all variables check defaults/main.yml
 
-.
+```sh
+# Amazon region where the resources will be provisioned.
+aws_region: us-west-2
 
+# CIDR address block first two octates.
+aws_cidr_block: "172.17"
+
+# VPC CIDR block.
+aws_vpc_block: "{{ aws_cidr_block }}.0.0/20"
+
+# EC2 AMI ID for the us-weast-2 region: Debian Stretch x86_64
+aws_ec2_ami: ami-09d31fc66dcb58522
+```
 Dependencies
 ------------
 
