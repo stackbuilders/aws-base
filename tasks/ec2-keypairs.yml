@@ -5,12 +5,13 @@
       region: "{{ region }}"
       state: present
   register: aws_mngt_keypair
-  
+
 - name: "Check for keypair locally"
-  local_action: stat path="{{ keypair }}.pem"
+  command: stat path="{{ keypair }}.pem"
+  delegate_to: localhost
   register: stat_key
 
 - name: "Copy private key"
-  local_action: copy content="{{ aws_mngt_keypair.key.private_key }}" dest="../{{ keypair }}.pem" mode=0400
-  when: |
-    aws_mngt_keypair.changed
+  command: copy content="{{ aws_mngt_keypair.key.private_key }}" dest="../{{ keypair }}.pem" mode=0400
+  delegate_to: localhost
+  when: aws_mngt_keypair.changed

@@ -3,7 +3,7 @@
   ec2_instance_facts:
     region: "{{ region }}"
     filters:
-      "tag:Name": staging.yenta.findkeep.love
+      "tag:Name": staging.project
       instance-state-name: running
   register: ec2_staging_state
 
@@ -11,7 +11,7 @@
   ec2_instance_facts:
     region: "{{ region }}"
     filters:
-      "tag:Name": production.yenta.findkeep.love
+      "tag:Name": production.project
       instance-state-name: running
   register: ec2_production_state
 
@@ -34,7 +34,7 @@
   when: |
     ec2_staging_state['instances'] |list |count == 0 or
     ec2_production_state['instances'] |list |count == 0
-    
+
 - name: "Getting security group id... "
   ec2_group_facts:
     region: "{{ region }}"
@@ -46,11 +46,11 @@
     ec2_staging_state['instances'] |list |count == 0 or
     ec2_production_state['instances'] |list |count == 0
 
-- name: "staging.yenta.findkeep.love creation... "
+- name: "staging.project creation... "
   ec2:
     region: "{{ region }}"
     instance_tags:
-      Name: "staging.yenta.findkeep.love"
+      Name: "staging.project"
       Type: "application"
       Description: "Application server"
     exact_count: 1
@@ -71,11 +71,11 @@
   when: ec2_staging_state['instances'] |list |count == 0
   register: ec2_staging_create
 
-- name: "production.yenta.findkeep.love creation... "
+- name: "production.project creation... "
   ec2:
     region: "{{ region }}"
     instance_tags:
-      Name: "production.yenta.findkeep.love"
+      Name: "production.project"
       Type: "application"
       Description: "Application server"
     exact_count: 1
@@ -95,15 +95,3 @@
     monitoring: no
   when: ec2_production_state['instances'] |list |count == 0
   register: ec2_production_create
-
- #- debug:
- #    msg: "ec2_{{ item[0] }}_id": "{{ item[1].instance_ids }}"
- #  loop: "[1, 2, 3, 4, 5, 6]|zip(ec2_siteserver.results)|list"
-
-  #- name: "Saving Site Servers instance id"
-  #  set_fact:
-  #    ec2_yenta_id: "{{ ec2_yenta_id + item['instance_ids'] }}"
-  #  loop: "{{ ec2_yenta_create.results }}"
-  #  when: ec2_yenta_create is defined
-  #  tags:
-  #    - ec2_yenta

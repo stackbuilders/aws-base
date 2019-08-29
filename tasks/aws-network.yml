@@ -32,7 +32,7 @@
   ec2_vpc_route_table_facts:
     region: "{{ region }}"
     filters:
-      vpc-id: "{{ vpc.vpc.id }}"      
+      vpc-id: "{{ vpc.vpc.id }}"
   register: vpc_rtb
 
 - name: "Routes and Subnets for VPC"

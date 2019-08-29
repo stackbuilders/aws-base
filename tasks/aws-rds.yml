@@ -10,14 +10,14 @@
   ec2_vpc_subnet_facts:
     region: "{{ region }}"
     filters:
-      vpc-id: "{{ vpc.vpcs[0].vpc_id }}" 
+      vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
   register: subnet
-      
+
 - name: "Getting SGroup id... "
   ec2_group_facts:
     region: "{{ region }}"
     filters:
-      vpc-id: "{{ vpc.vpcs[0].vpc_id }}" 
+      vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
       group-name: "mariadb_{{ aws_sgroup }}"
   register: group
 
@@ -25,7 +25,7 @@
   ec2_instance_facts:
     region: "{{ region }}"
     filters:
-      "tag:Name": staging.yenta.findkeep.love
+      "tag:Name": staging.project
       instance-state-name: running
   register: ec2_staging_state
 
@@ -33,53 +33,54 @@
   ec2_instance_facts:
     region: "{{ region }}"
     filters:
-      "tag:Name": production.yenta.findkeep.love
+      "tag:Name": production.project
       instance-state-name: running
   register: ec2_production_state
 
-- set_fact:
+- name: Setting RDS facts
+  set_fact:
     staging_subnet: "{{ ec2_staging_state['instances'][0].network_interfaces[0].subnet_id }}"
     production_subnet: "{{ ec2_production_state['instances'][0].network_interfaces[0].subnet_id }}"
-    rds_subnet: "yenta"
+    rds_subnet: "project"
 
 - name: "Creating RDS Security group"
   rds_subnet_group:
     state: present
     region: "{{ region }}"
     name: "{{ rds_subnet }}"
-    description: "DB sgroup for yenta"
+    description: "DB sgroup for project"
     subnets:
        - "{{ staging_subnet }}"
        - "{{ production_subnet }}"
 
-- name: "yenta staging mariadb rds instance..."
+- name: "Staging mariadb rds instance..."
   rds:
     command: create
-    instance_name: staging-yenta-mariadb
+    instance_name: staging-mariadb
     db_engine: mariadb
-    username: "{{ yenta_staging_rds_username }}"
-    password: "{{ yenta_staging_rds_password }}"
+    username: "{{ project_staging_rds_username }}"
+    password: "{{ project_staging_rds_password }}"
     region: "{{ region }}"
     zone: "{{ region }}b"
-    subnet: "{{ rds_subnet }}"    
+    subnet: "{{ rds_subnet }}"
     instance_type: db.t2.micro
     size: "10"
     publicly_accessible: yes
     wait: yes
     wait_timeout: 600
     tags:
-        Name: staging-yenta
-  register: rds_staging_yenta
+        Name: staging-project
+  register: rds_staging_project
 
-- name: "yenta production mariadb rds instance..."
+- name: "Production mariadb rds instance..."
   rds:
     command: create
-    instance_name: production-yenta-mariadb
+    instance_name: production-mariadb
     db_engine: mariadb
-    username: "{{ yenta_production_rds_username }}"
-    password: "{{ yenta_production_rds_password }}"
+    username: "{{ project_production_rds_username }}"
+    password: "{{ project_production_rds_password }}"
     region: "{{ region }}"
-    subnet: "{{ rds_subnet }}"    
+    subnet: "{{ rds_subnet }}"
     zone: "{{ region }}c"
     instance_type: db.t2.small
     size: "10"
@@ -87,32 +88,16 @@
     wait: yes
     wait_timeout: 600
     tags:
-        Name: production-yenta
-  register: rds_production_yenta
-
-  #- name: "Restoring shared-websites rds instance from snapshot... "
-  #  rds:
-  #    command: restore
-  #    snapshot: shared-websites
-  #    instance_name: shared-websites
-  #    region: "{{ region }}"
-  #    zone: "{{ region }}a"
-  #    subnet: "{{ rds_subnet }}"    
-  #    instance_type: db.t2.small
-  #    publicly_accessible: yes
-  #    wait: yes
-  #    wait_timeout: 600
-  #    tags:
-  #        Name: shared-websites
-  #  register: rds
+        Name: production-project
+  register: rds_production_project
 
 - name: "Modifying rds instances... "
   rds:
     command: modify
     instance_name: "{{ item }}"
     region: "{{ region }}"
-    subnet: 
+    subnet:
     vpc_security_groups: "{{ group['security_groups'][0].group_id }}"
   loop:
-      - staging-yenta-mariadb
-      - production-yenta-mariadb
+      - staging-project-mariadb
+      - production-project-mariadb

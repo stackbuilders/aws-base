@@ -4,7 +4,7 @@
   ec2_eip_facts:
     region: "{{ region }}"
     filters:
-      "tag:Name": "staging.yenta.findkeep.love"
+      "tag:Name": "staging.project"
   register: staging_eip_fact
   tags:
     - ec2_eips
@@ -14,7 +14,7 @@
   ec2_instance_facts:
     region: "{{ region }}"
     filters:
-      "tag:Name": "staging.yenta.findkeep.love"
+      "tag:Name": "staging.project"
       "instance-state-name": "running"
   register: staging_fact
   tags:
@@ -48,7 +48,7 @@
     region: "{{ region }}"
     resource: "{{ staging_eip.allocation_id  }}"
     tags:
-      Name: "staging.yenta.findkeep.love"
+      Name: "staging.project"
   when: staging_new_eip.allocation_id is not defined
   tags:
     - ec2_eips
@@ -58,7 +58,7 @@
   ec2_eip_facts:
     region: "{{ region }}"
     filters:
-      "tag:Name": "production.yenta.findkeep.love"
+      "tag:Name": "production.project"
   register: production_eip_fact
   tags:
     - ec2_eips
@@ -68,7 +68,7 @@
   ec2_instance_facts:
     region: "{{ region }}"
     filters:
-      "tag:Name": "production.yenta.findkeep.love"
+      "tag:Name": "production.project"
       "instance-state-name": "running"
   register: production_fact
   tags:
@@ -100,5 +100,5 @@
     region: "{{ region }}"
     resource: "{{ production_eip_fact['addresses'][0].allocation_id  }}"
     tags:
-      Name: "production.yenta.findkeep.love"
+      Name: "production.project"
   when: production_new_eip is not defined
