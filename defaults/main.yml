@@ -42,3 +42,8 @@ aws_vpc_subnets:
 
 # EC2 AMI ID for the us-weast-2 region: Debian Stretch x86_64
 aws_ec2_ami: ami-09d31fc66dcb58522
+
+# RDS definitions
+aws_rds_port: 3306
+aws_rds_dbtype: mariadb
+aws_rds_instance_type: db.t2.micro

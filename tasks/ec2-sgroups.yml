@@ -28,7 +28,7 @@
         cidr_ipv6: ::/0
   register: web_sgroup
 
-- name: "ssh security group"
+- name: "SSH security group"
   ec2_group:
     region: "{{ region }}"
     name: "ssh_{{ aws_sgroup_suffix }}"
@@ -45,21 +45,21 @@
         cidr_ipv6: ::/0
   register: ssh_sgroup
 
-- name: "mariadb security group"
+- name: "RDS security group"
   ec2_group:
     region: "{{ region }}"
-    name: "mariadb_{{ aws_sgroup_suffix }}"
-    description: "LAN MARIADB"
+    name: "rds_{{ aws_sgroup_suffix }}"
+    description: "LAN RDS"
     vpc_id: "{{ vpc.vpcs[0]['id'] }}"
     tags:
-      Name: "mariadb_{{ aws_sgroup_suffix }}"
+      Name: "rds_{{ aws_sgroup_suffix }}"
     state: present
     rules:
       - proto: tcp
-        from_port: 3306
-        to_port: 3306
+        from_port: "{{ aws_rds_port }}"
+        to_port: "{{ aws_rds_port }}"
         cidr_ip: "{{ aws_cidr_block }}.0.0/20"
-  register: mariadb_sgroup
+  register: rds_sgroup
 
 - name: "ICMP for local network security group"
   ec2_group:

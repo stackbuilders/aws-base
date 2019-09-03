@@ -18,7 +18,7 @@
     region: "{{ region }}"
     filters:
       vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
-      group-name: "mariadb_{{ aws_sgroup }}"
+      group-name: "rds_{{ aws_sgroup }}"
   register: group
 
 - name: "Getting staging instance subnet id..."
@@ -53,17 +53,17 @@
        - "{{ staging_subnet }}"
        - "{{ production_subnet }}"
 
-- name: "Staging mariadb rds instance..."
+- name: "Staging RDS instance..."
   rds:
     command: create
-    instance_name: staging-mariadb
-    db_engine: mariadb
+    instance_name: staging-rds
+    db_engine: "{{ aws_rds_dbtype }}"
     username: "{{ project_staging_rds_username }}"
     password: "{{ project_staging_rds_password }}"
     region: "{{ region }}"
     zone: "{{ region }}b"
     subnet: "{{ rds_subnet }}"
-    instance_type: db.t2.micro
+    instance_type: "{{ aws_rds_instance_type }}"
     size: "10"
     publicly_accessible: yes
     wait: yes
@@ -72,17 +72,17 @@
         Name: staging-project
   register: rds_staging_project
 
-- name: "Production mariadb rds instance..."
+- name: "Production RDS instance..."
   rds:
     command: create
-    instance_name: production-mariadb
-    db_engine: mariadb
+    instance_name: production-rds
+    db_engine: "{{ aws_rds_dbtype }}"
     username: "{{ project_production_rds_username }}"
     password: "{{ project_production_rds_password }}"
     region: "{{ region }}"
     subnet: "{{ rds_subnet }}"
     zone: "{{ region }}c"
-    instance_type: db.t2.small
+    instance_type: "{{ aws_rds_instance_type }}"
     size: "10"
     publicly_accessible: yes
     wait: yes
@@ -91,7 +91,7 @@
         Name: production-project
   register: rds_production_project
 
-- name: "Modifying rds instances... "
+- name: "Updating RDS vpc security groups... "
   rds:
     command: modify
     instance_name: "{{ item }}"
@@ -99,5 +99,5 @@
     subnet:
     vpc_security_groups: "{{ group['security_groups'][0].group_id }}"
   loop:
-      - staging-project-mariadb
-      - production-project-mariadb
+      - staging-project-rds
+      - production-project-rds

@@ -15,12 +15,12 @@ Requirements
 Install
 --------------
 ```sh
-ansible-galaxy install stackbuilders.aws-role
+ansible-galaxy install stackbuilders.aws-provision
 ```
 
 Role Variables
 --------------
-The important variables to set are listed below. For all variables check defaults/main.yml
+Default important variables to set are listed below. For all variables check defaults/main.yml
 
 ```sh
 # Amazon region where the resources will be provisioned.
@@ -34,27 +34,44 @@ aws_vpc_block: "{{ aws_cidr_block }}.0.0/20"
 
 # EC2 AMI ID for the us-weast-2 region: Debian Stretch x86_64
 aws_ec2_ami: ami-09d31fc66dcb58522
-```
-Dependencies
-------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+# RDS database type and port. See: (ansible rds)[https://docs.ansible.com/ansible/latest/modules/rds_module.html] for more information
+aws_rds_port: 3306
+aws_rds_dbtype: mariadb
+aws_rds_instance_type: db.t2.micro
+```
+
+AWS Credentials and connection
+----------------
+In `~/.aws/config` we can set a profile or use the default, for example:
+```sh
+[default]
+region = us-east-1
+[project]
+region = us-west-2
+output = json
+```
+
+Then we set Amazon credentials in `~/.aws/credentials` for our profile:
+```sh
+[project]
+aws_access_key_id = AMAZONKEYID
+aws_secret_access_key = AMAZONSECRECTKEY
+```
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
     - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: stackbuilders.aws-provision }
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Carlos Egüez, Stack Builders Inc.

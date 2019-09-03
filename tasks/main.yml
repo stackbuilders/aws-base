@@ -1,5 +1,8 @@
 ---
 # tasks file for stackbuilders.aws-provision
 - include_tasks: aws-network.yml
+  tags: network
 - include_tasks: aws-ec2.yml
+  tags: ec2
 - include_tasks: aws-rds.yml
+  tags: rds

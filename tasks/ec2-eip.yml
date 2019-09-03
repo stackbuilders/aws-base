@@ -6,9 +6,6 @@
     filters:
       "tag:Name": "staging.project"
   register: staging_eip_fact
-  tags:
-    - ec2_eips
-    - eip
 
 - name: "Getting staging ec2 facts... "
   ec2_instance_facts:
@@ -17,9 +14,6 @@
       "tag:Name": "staging.project"
       "instance-state-name": "running"
   register: staging_fact
-  tags:
-    - ec2_eips
-    - eip
 
 - name: "Assigning staging eips when recreated... "
   ec2_eip:
@@ -29,8 +23,6 @@
     state: present
   when: staging_eip_fact['addresses'] |list |count == 1
   register: staging_eip
-  tags:
-    - ec2_eips
 
 - name: "Assigning staging eips when created... "
   ec2_eip:
@@ -40,8 +32,6 @@
     state: present
   when: staging_eip_fact['addresses'][0] is not defined
   register: staging_new_eip
-  tags:
-    - ec2_eips
 
 - name: "Setting staging Name tag in eip..."
   ec2_tag:
@@ -50,8 +40,6 @@
     tags:
       Name: "staging.project"
   when: staging_new_eip.allocation_id is not defined
-  tags:
-    - ec2_eips
 
 # Prodution
 - name: "Getting production eip facts..."
@@ -60,9 +48,6 @@
     filters:
       "tag:Name": "production.project"
   register: production_eip_fact
-  tags:
-    - ec2_eips
-    - eip
 
 - name: "Getting production id facts... "
   ec2_instance_facts:
@@ -71,9 +56,6 @@
       "tag:Name": "production.project"
       "instance-state-name": "running"
   register: production_fact
-  tags:
-    - ec2_eips
-    - eip
 
 - name: "Assigning production eips when recreated... "
   ec2_eip:
@@ -83,8 +65,6 @@
     state: present
   when: production_eip_fact['addresses'] |list |count == 1
   register: production_eip
-  tags:
-    - ec2_eips
 
 - name: "Assigning production eips when created... "
   ec2_eip:
