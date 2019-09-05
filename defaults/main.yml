@@ -6,42 +6,46 @@ aws_region: us-west-2
 aws_keypair: aws-provision
 
 # Added text for security groups Name tag.
-aws_sgroup_suffix: public_access
+#aws_sgroup_suffix: public_access
 
 # Initialize of list arrays
-ec2_sites_ids: []
-ec2_sites_eips: []
-subnets_id: []
+aws_ec2_sites_ids: []
+aws_ec2_sites_eips: []
+aws_subnets_id: []
 
-# This must not be defined!
-vpc_name: project_vpc
-igw_name: project_igw
+aws_vpc_name: project_vpc
+aws_vpc_igw_name: project_igw
 
 # CIDR address block first two octates
-aws_cidr_block: "172.17"
+aws_vpc_cidr_block: "172.17"
 
 # CIDR block for security groups outbound traffic.
 aws_sgroup_cidr_ip4: "0.0.0.0/0"
-aws_sgroupcidr_ip6: "::/0"
+aws_sgroup_cidr_ip6: "::/0"
 
 # VPC and subnets cidr blocks
-aws_vpc_block: "{{ aws_cidr_block }}.0.0/20"
+aws_vpc_block: "{{ aws_vpc_cidr_block }}.0.0/20"
 aws_vpc_subnets:
-  - cidr: "{{ aws_cidr_block }}.1.0/27"
+  - cidr: "{{ aws_vpc_cidr_block }}.1.0/27"
     az: "a"
-  - cidr: "{{ aws_cidr_block }}.2.0/27"
+  - cidr: "{{ aws_vpc_cidr_block }}.2.0/27"
     az: "a"
-  - cidr: "{{ aws_cidr_block }}.3.0/27"
+  - cidr: "{{ aws_vpc_cidr_block }}.3.0/27"
     az: "b"
-  - cidr: "{{ aws_cidr_block }}.4.0/27"
+  - cidr: "{{ aws_vpc_cidr_block }}.4.0/27"
     az: "b"
-  - cidr: "{{ aws_cidr_block }}.5.0/27"
+  - cidr: "{{ aws_vpc_cidr_block }}.5.0/27"
     az: "c"
-  - cidr: "{{ aws_cidr_block }}.6.0/27"
+  - cidr: "{{ aws_vpc_cidr_block }}.6.0/27"
     az: "c"
 
 # EC2 AMI ID for the us-weast-2 region: Debian Stretch x86_64
-aws_ec2_ami: ami-09d31fc66dcb58522
+# Note that the AMI IDs change across Aviability Zones.
+aws_ec2_ami: ami-0cebe9c5c89f17474
+
+aws_ec2_instance_type: t2.micro
+aws_ec2_name_tag: application
+aws_ec2_type_tag: servers
 
 # RDS definitions
 aws_rds_port: 3306
