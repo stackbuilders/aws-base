@@ -12,9 +12,6 @@
   delegate_to: localhost
   register: stat_key
 
-- debug:
-    var: aws_mngt_keypair 
-
 - name: "Copy private key"
   copy: content="{{ aws_mngt_keypair.key.private_key }}" dest="../{{ aws_keypair }}.pem" mode=0400
   delegate_to: localhost

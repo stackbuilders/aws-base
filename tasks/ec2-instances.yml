@@ -52,28 +52,3 @@
     monitoring: no
   when: ec2_servers_state['instances'] |list |count == 0
   register: ec2_servers_create
-
-  #- name: "production.project creation... "
-  #  ec2:
-  #    aws_region: "{{ aws_region }}"
-  #    instance_tags:
-  #      Name: "production.project"
-  #      Type: "application"
-  #      Description: "Application server"
-  #    exact_count: 1
-  #    count_tag:
-  #      Name: Application server
-  #      Description: "Application Server"
-  #    key_name: "{{ keypair }}"
-  #    group_id:
-  #      - "{{ group['results'][0]['security_groups'][0].group_id }}"
-  #      - "{{ group['results'][1]['security_groups'][0].group_id }}"
-  #      - "{{ group['results'][2]['security_groups'][0].group_id }}"
-  #    vpc_subnet_id: "{{ vpc_subnets['subnets'][1].id }}"
-  #    instance_type: t2.medium
-  #    image: "{{ aws_ec2_ami }}"
-  #    wait: true
-  #    wait_timeout: 500
-  #    monitoring: no
-  #  when: ec2_production_state['instances'] |list |count == 0
-  #  register: ec2_production_create
