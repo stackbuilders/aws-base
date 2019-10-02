@@ -1,103 +1,93 @@
 ---
 - name: "Getting VPC id... "
   ec2_vpc_net_facts:
-    region: "{{ region }}"
+    region: "{{ aws_region }}"
     filters:
-      "tag:Name": "{{ vpc_name }}"
+      "tag:Name": "{{ aws_vpc_name }}"
   register: vpc
 
 - name: "Getting subnets id"
   ec2_vpc_subnet_facts:
-    region: "{{ region }}"
+    region: "{{ aws_region }}"
     filters:
       vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
   register: subnet
 
 - name: "Getting SGroup id... "
   ec2_group_facts:
-    region: "{{ region }}"
+    region: "{{ aws_region }}"
     filters:
       vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
-      group-name: "rds_{{ aws_sgroup }}"
-  register: group
+      group-name: "rds"
+  register: sgroup
 
-- name: "Getting staging instance subnet id..."
+- name: "Getting application instance subnet id..."
   ec2_instance_facts:
-    region: "{{ region }}"
+    region: "{{ aws_region }}"
     filters:
-      "tag:Name": staging.project
+      "tag:Name": application
       instance-state-name: running
-  register: ec2_staging_state
+  register: ec2_subnet
 
-- name: "Getting production instance subnet id..."
-  ec2_instance_facts:
-    region: "{{ region }}"
-    filters:
-      "tag:Name": production.project
-      instance-state-name: running
-  register: ec2_production_state
-
-- name: Setting RDS facts
-  set_fact:
-    staging_subnet: "{{ ec2_staging_state['instances'][0].network_interfaces[0].subnet_id }}"
-    production_subnet: "{{ ec2_production_state['instances'][0].network_interfaces[0].subnet_id }}"
-    rds_subnet: "project"
-
-- name: "Creating RDS Security group"
+- name: "Creating RDS Subnet group"
   rds_subnet_group:
-    state: present
-    region: "{{ region }}"
-    name: "{{ rds_subnet }}"
+    region: "{{ aws_region }}"
+    name: "application"
     description: "DB sgroup for project"
     subnets:
-       - "{{ staging_subnet }}"
-       - "{{ production_subnet }}"
+       - "{{ subnet['subnets'][0].id }}"
+       - "{{ subnet['subnets'][1].id }}"
+       - "{{ subnet['subnets'][2].id }}"
+       - "{{ subnet['subnets'][3].id }}"
+       - "{{ subnet['subnets'][4].id }}"
+       - "{{ subnet['subnets'][5].id }}"
+    state: present
 
-- name: "Staging RDS instance..."
+- name: "Application RDS instance..."
   rds:
     command: create
-    instance_name: staging-rds
+    instance_name: applcation-rds-01
     db_engine: "{{ aws_rds_dbtype }}"
-    username: "{{ project_staging_rds_username }}"
-    password: "{{ project_staging_rds_password }}"
-    region: "{{ region }}"
-    zone: "{{ region }}b"
-    subnet: "{{ rds_subnet }}"
+    username: "{{ application_rds_username }}"
+    password: "{{ application_rds_password }}"
+    region: "{{ aws_region }}"
+    subnet: "application"
+    zone: "{{ aws_region }}c"
     instance_type: "{{ aws_rds_instance_type }}"
     size: "10"
-    publicly_accessible: yes
+    publicly_accessible: no
     wait: yes
     wait_timeout: 600
     tags:
-        Name: staging-project
-  register: rds_staging_project
-
-- name: "Production RDS instance..."
-  rds:
-    command: create
-    instance_name: production-rds
-    db_engine: "{{ aws_rds_dbtype }}"
-    username: "{{ project_production_rds_username }}"
-    password: "{{ project_production_rds_password }}"
-    region: "{{ region }}"
-    subnet: "{{ rds_subnet }}"
-    zone: "{{ region }}c"
-    instance_type: "{{ aws_rds_instance_type }}"
-    size: "10"
-    publicly_accessible: yes
-    wait: yes
-    wait_timeout: 600
-    tags:
-        Name: production-project
+        Name: application-rds-01
   register: rds_production_project
 
-- name: "Updating RDS vpc security groups... "
+- name: "Application RDS instance..."
   rds:
-    command: modify
-    instance_name: "{{ item }}"
-    region: "{{ region }}"
-    subnet:
-    vpc_security_groups: "{{ group['security_groups'][0].group_id }}"
-  loop:
-      - staging-project-rds
-      - production-project-rds
+    command: create
+    instance_name: applcation-rds-02
+    db_engine: "{{ aws_rds_dbtype }}"
+    username: "{{ application_rds_username }}"
+    password: "{{ application_rds_password }}"
+    region: "{{ aws_region }}"
+    subnet: "application"
+    zone: "{{ aws_region }}c"
+    instance_type: "{{ aws_rds_instance_type }}"
+    size: "10"
+    publicly_accessible: no
+    wait: yes
+    wait_timeout: 600
+    tags:
+        Name: application-rds-02
+  register: rds_production_project
+
+  #- name: "Updating RDS vpc security groups... "
+  #  rds:
+  #    command: modify
+  #    instance_name: "{{ item }}"
+  #    region: "{{ aws_region }}"
+  #    subnet:
+  #    vpc_security_groups: "{{ group['security_groups'][0].group_id }}"
+  #  loop:
+  #      - staging-project-rds
+  #      - production-project-rds

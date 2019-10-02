@@ -23,15 +23,6 @@
   register: vpc_subnets
   when: ec2_servers_state['instances'] |list |count == 0
 
-- name: "Getting security group id... "
-  ec2_group_facts:
-    aws_region: "{{ aws_region }}"
-    filters:
-      group-name: "{{ item }}"
-  loop: [ssh, web, icmp]
-  register: group
-  when: ec2_servers_state['instances'] |list |count == 0
-
 - name: "server instance creation... "
   ec2:
     aws_region: "{{ aws_region }}"
