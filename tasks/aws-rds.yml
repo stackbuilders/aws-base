@@ -43,11 +43,11 @@
        - "{{ subnet['subnets'][5].id }}"
     state: present
 
-- name: "Application RDS instance..."
+- name: "Application RDS instance 01"
   rds:
     command: create
     instance_name: applcation-rds-01
-    db_engine: "{{ aws_rds_dbtype }}"
+    instance_name: "{{ aws_rds_01_name }}"
     username: "{{ application_rds_username }}"
     password: "{{ application_rds_password }}"
     region: "{{ aws_region }}"
@@ -60,12 +60,12 @@
     wait_timeout: 600
     tags:
         Name: application-rds-01
-  register: rds_production_project
+  when: aws_rds_01_name is defined
 
-- name: "Application RDS instance..."
+- name: "Application RDS instance 02"
   rds:
     command: create
-    instance_name: applcation-rds-02
+    instance_name: "{{ aws_rds_02_name }}"
     db_engine: "{{ aws_rds_dbtype }}"
     username: "{{ application_rds_username }}"
     password: "{{ application_rds_password }}"
@@ -79,7 +79,7 @@
     wait_timeout: 600
     tags:
         Name: application-rds-02
-  register: rds_production_project
+  when: aws_rds_02_name is defined
 
   #- name: "Updating RDS vpc security groups... "
   #  rds:
