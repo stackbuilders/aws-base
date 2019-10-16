@@ -37,7 +37,8 @@ aws_ec2_ami: ami-09d31fc66dcb58522
 # EC2 type tag to set for the instances to create.
 aws_ec2_type_tag: servers
 
-# RDS database type and port. See: (ansible rds)[https://docs.ansible.com/ansible/latest/modules/rds_module.html] for more information
+# RDS database type and port. 
+# See: (ansible rds)[https://docs.ansible.com/ansible/latest/modules/rds_module.html] for more information
 aws_rds_port: 3306
 aws_rds_dbtype: mariadb
 aws_rds_instance_type: db.t2.micro
@@ -68,12 +69,23 @@ AWS_PROFILE=project ansible-playbook playbooks/myplaybook.yml
 
 Example Playbook
 ----------------
+```yaml
+- hosts: local
+  connection: local
+  gather_facts: false
+  vars:
+    aws_keypair: aws-keypair
+    aws_region: us-east-1
+    ami_name_format: "ami-{{ lookup('pipe'), 'date +%d%m%y') }}" 
+    application_rds_username: "appadmin"
+    application_rds_password: "1q2w3e4r5t"
+    create_ec2: true
+    aws_rds_port: 5432
+    aws_rds_dbtype: postgres
 
-    - hosts: servers
-      roles:
-         - { role: stackbuilders.aws-provision }
-
-License
+  roles:
+    - role: aws-role
+```
 -------
 
 MIT
