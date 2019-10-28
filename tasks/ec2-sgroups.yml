@@ -26,7 +26,6 @@
         to_port: 443
         cidr_ip: 0.0.0.0/0
         cidr_ipv6: ::/0
-  register: web_sgroup
 
 - name: "SSH security group"
   ec2_group:
@@ -43,7 +42,6 @@
         to_port: 22
         cidr_ip: "{{ aws_sgroup_cidr_ip4 }}"
         cidr_ipv6: "{{ aws_sgroup_cidr_ip6 }}"
-  register: ssh_sgroup
 
 - name: "RDS security group"
   ec2_group:
@@ -59,7 +57,6 @@
         from_port: "{{ aws_rds_port }}"
         to_port: "{{ aws_rds_port }}"
         cidr_ip: "{{ aws_vpc_cidr_block }}.0.0/20"
-  register: rds_sgroup
 
 - name: "ICMP for local network security group"
   ec2_group:
@@ -75,8 +72,3 @@
         from_port: -1
         to_port: -1
         cidr_ip: "{{ aws_vpc_cidr_block }}.0.0/21"
-  register: icmp_sgroup
-
-- name: Saving ssh security group id
-  set_fact:
-    ssh_sgroup_id: "{{ ssh_sgroup.group_id }}"

@@ -5,9 +5,6 @@ aws_region: us-west-2
 # Name of the keypair for ssh connection to the ec2 instances.
 aws_keypair: aws-provision
 
-# Added text for security groups Name tag.
-#aws_sgroup_suffix: public_access
-
 # Initialize of list arrays
 aws_ec2_sites_ids: []
 aws_ec2_sites_eips: []
@@ -48,6 +45,4 @@ aws_ec2_name_tag: application
 aws_ec2_type_tag: servers
 
 # RDS definitions
-aws_rds_port: 3306
-aws_rds_dbtype: mariadb
 aws_rds_instance_type: db.t2.micro

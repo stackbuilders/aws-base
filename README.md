@@ -76,7 +76,6 @@ Example Playbook
   vars:
     aws_keypair: aws-keypair
     aws_region: us-east-1
-    ami_name_format: "ami-{{ lookup('pipe'), 'date +%d%m%y') }}" 
     application_rds_username: "appadmin"
     application_rds_password: "1q2w3e4r5t"
     create_ec2: true

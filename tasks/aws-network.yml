@@ -16,7 +16,6 @@
     resource_tags:
         Name: Project Subnet
     wait: true
-  register: vpc_subnets
   loop: "{{ aws_vpc_subnets }}"
 
 - name: "Internet Gateway creation"
