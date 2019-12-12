@@ -1,82 +1,74 @@
 ---
 - name: "VPC facts"
   ec2_vpc_net_facts:
-    region: "{{ region }}"
+    region: "{{ aws_region }}"
     filters:
-      "tag:Name": "{{ vpc_name }}"
+      "tag:Name": "{{ aws_vpc_name }}"
   register: vpc
 
 - name: "http/https security group"
   ec2_group:
-    region: "{{ region }}"
-    name: "web_{{ aws_sgroup_suffix }}"
+    region: "{{ aws_region }}"
+    name: "web"
     description: "IN TCP HTTP/HTTPS"
     vpc_id: "{{ vpc.vpcs[0]['id'] }}"
     tags:
-      Name: "web_{{ aws_sgroup_suffix }}"
+      Name: "web"
     state: present
     rules:
       - proto: tcp
         from_port: 80
         to_port: 80
-        cidr_ip: "{{ aws_cidr_block_ip4 }}"
-        cidr_ipv6: "{{ aws_cidr_block_ip6 }}"
+        cidr_ip: "{{ aws_sgroup_cidr_ip4 }}"
+        cidr_ipv6: "{{ aws_sgroup_cidr_ip6 }}"
       - proto: tcp
         from_port: 443
         to_port: 443
         cidr_ip: 0.0.0.0/0
         cidr_ipv6: ::/0
-  register: web_sgroup
 
 - name: "SSH security group"
   ec2_group:
-    region: "{{ region }}"
-    name: "ssh_{{ aws_sgroup_suffix }}"
+    aws_region: "{{ aws_region }}"
+    name: "ssh"
     description: "IN TCP SSH"
     vpc_id: "{{ vpc.vpcs[0]['id'] }}"
     tags:
-      Name: "ssh_{{ aws_sgroup_suffix }}"
+      Name: "ssh"
     state: present
     rules:
       - proto: tcp
         from_port: 22
         to_port: 22
-        cidr_ip: 0.0.0.0/0
-        cidr_ipv6: ::/0
-  register: ssh_sgroup
+        cidr_ip: "{{ aws_sgroup_cidr_ip4 }}"
+        cidr_ipv6: "{{ aws_sgroup_cidr_ip6 }}"
 
 - name: "RDS security group"
   ec2_group:
-    region: "{{ region }}"
-    name: "rds_{{ aws_sgroup_suffix }}"
+    aws_region: "{{ aws_region }}"
+    name: "rds"
     description: "LAN RDS"
     vpc_id: "{{ vpc.vpcs[0]['id'] }}"
     tags:
-      Name: "rds_{{ aws_sgroup_suffix }}"
+      Name: "rds"
     state: present
     rules:
       - proto: tcp
         from_port: "{{ aws_rds_port }}"
         to_port: "{{ aws_rds_port }}"
-        cidr_ip: "{{ aws_cidr_block }}.0.0/20"
-  register: rds_sgroup
+        cidr_ip: "{{ aws_vpc_cidr_block }}.0.0/20"
 
 - name: "ICMP for local network security group"
   ec2_group:
-    region: "{{ region }}"
-    name: "icmp_{{ aws_sgroup_suffix }}"
+    aws_region: "{{ aws_region }}"
+    name: "icmp"
     description: "IN/OUT ICMP"
     vpc_id: "{{ vpc.vpcs[0]['id'] }}"
     tags:
-      Name: "icmp_{{ aws_sgroup_suffix }}"
+      Name: "icmp"
     state: present
     rules:
       - proto: icmp
         from_port: -1
         to_port: -1
-        cidr_ip: "{{ aws_cidr_block }}.0.0/21"
-  register: icmp_sgroup
-
-- name: Saving ssh security group id
-  set_fact:
-    ssh_sgroup_id: "{{ ssh_sgroup.group_id }}"
+        cidr_ip: "{{ aws_vpc_cidr_block }}.0.0/21"

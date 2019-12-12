@@ -1,84 +1,40 @@
 ---
-# Staging
-- name: "Getting staging eip facts..."
+- name: "Getting application eip facts..."
   ec2_eip_facts:
-    region: "{{ region }}"
+    region: "{{ aws_region }}"
     filters:
-      "tag:Name": "staging.project"
-  register: staging_eip_fact
+      tag:Name: "application.project"
+  register: eip_fact
 
-- name: "Getting staging ec2 facts... "
+- name: "Getting application ec2 facts... "
   ec2_instance_facts:
-    region: "{{ region }}"
+    region: "{{ aws_region }}"
     filters:
-      "tag:Name": "staging.project"
+      "tag:Name": "{{ aws_ec2_name_tag }}"
       "instance-state-name": "running"
-  register: staging_fact
+  register: ec2_fact
 
-- name: "Assigning staging eips when recreated... "
+- name: "Assigning application free eips... "
   ec2_eip:
-    region: "{{ region }}"
-    device_id: "{{ staging_fact['instances'][0].instance_id }}"
-    ip: "{{ staging_eip_fact['addresses'][0].public_ip  }}"
+    region: "{{ aws_region }}"
+    device_id: "{{ item[0].instance_id }}"
+    ip: "{{ item[1].public_ip }}"
     state: present
-  when: staging_eip_fact['addresses'] |list |count == 1
-  register: staging_eip
-
-- name: "Assigning staging eips when created... "
+  loop: "{{ ec2_fact['instances']|zip(eip_fact['addresses'])|list }}"
+  register: app_eip
+ 
+- name: "Assigning application eips when created... "
   ec2_eip:
-    region: "{{ region }}"
-    device_id: "{{ staging_fact['instances'][0].instance_id }}"
-    private_ip_address: "{{ staging_fact['instances'][0].private_ip_address }}"
+    region: "{{ aws_region }}"
+    device_id: "{{ item.instance_id }}"
     state: present
-  when: staging_eip_fact['addresses'][0] is not defined
-  register: staging_new_eip
-
-- name: "Setting staging Name tag in eip..."
+  loop: "{{ ec2_fact['instances'] }}"
+  when: eip_fact['addresses'] |list |count == 0
+      
+- name: "Setting Name tag in eips..."
   ec2_tag:
-    region: "{{ region }}"
-    resource: "{{ staging_eip.allocation_id  }}"
+    region: "{{ aws_region }}"
+    resource: "{{ item.allocation_id  }}"
     tags:
-      Name: "staging.project"
-  when: staging_new_eip.allocation_id is not defined
-
-# Prodution
-- name: "Getting production eip facts..."
-  ec2_eip_facts:
-    region: "{{ region }}"
-    filters:
-      "tag:Name": "production.project"
-  register: production_eip_fact
-
-- name: "Getting production id facts... "
-  ec2_instance_facts:
-    region: "{{ region }}"
-    filters:
-      "tag:Name": "production.project"
-      "instance-state-name": "running"
-  register: production_fact
-
-- name: "Assigning production eips when recreated... "
-  ec2_eip:
-    region: "{{ region }}"
-    device_id: "{{ production_fact['instances'][0].instance_id }}"
-    ip: "{{ production_eip_fact['addresses'][0].public_ip  }}"
-    state: present
-  when: production_eip_fact['addresses'] |list |count == 1
-  register: production_eip
-
-- name: "Assigning production eips when created... "
-  ec2_eip:
-    region: "{{ region }}"
-    device_id: "{{ production_fact['instances'][0].instance_id }}"
-    private_ip_address: "{{ production_fact['instances'][0].private_ip_address }}"
-    state: present
-  when: production_eip_fact['addresses'][0] is not defined
-  register: production_new_eip
-
-- name: "Setting production Name tag in eip..."
-  ec2_tag:
-    region: "{{ region }}"
-    resource: "{{ production_eip_fact['addresses'][0].allocation_id  }}"
-    tags:
-      Name: "production.project"
-  when: production_new_eip is not defined
+      Name: "application.project"
+  loop: "{{ app_eip['results']|list}}"
