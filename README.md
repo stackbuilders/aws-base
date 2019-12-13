@@ -31,9 +31,6 @@ aws_vpc_name: project_vpc
 aws_vpc_cidr_block: "172.17"
 aws_vpc_block: "{{ aws_cidr_block }}.0.0/20"
 
-# EC2 AMI ID for the us-weast-2 region: Debian Stretch x86_64
-aws_ec2_ami: ami-09d31fc66dcb58522
-
 # EC2 type tag to set for the instances to create.
 aws_ec2_type_tag: servers
 
@@ -67,6 +64,11 @@ To use the aws profile, set the AWS_PROFILE enviroment variable, for exammple at
 AWS_PROFILE=project ansible-playbook playbooks/myplaybook.yml
 ```
 
+##NOTE: We MUST set the `aws_ec2_ami` value like the following as this depends on the region:
+```sh
+aws_ec2_ami: ami-09d31fc66dcb58522
+```
+
 Example Playbook
 ----------------
 ```yaml
@@ -76,6 +78,7 @@ Example Playbook
   vars:
     aws_keypair: aws-keypair
     aws_region: us-east-1
+    aws_ec2_ami: ami-09e31fc65dcb585aa
     application_rds_username: "appadmin"
     application_rds_password: "1q2w3e4r5t"
     create_ec2: true

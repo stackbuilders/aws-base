@@ -36,10 +36,6 @@ aws_vpc_subnets:
   - cidr: "{{ aws_vpc_cidr_block }}.6.0/27"
     az: "c"
 
-# EC2 AMI ID for the us-weast-2 region: Debian Stretch x86_64
-# Note that the AMI IDs change across Aviability Zones.
-aws_ec2_ami: ami-0cebe9c5c89f17474
-
 aws_ec2_instance_type: t2.micro
 aws_ec2_name_tag: application
 aws_ec2_type_tag: servers
