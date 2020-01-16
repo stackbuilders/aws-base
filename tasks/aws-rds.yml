@@ -47,9 +47,11 @@
   rds:
     command: create
     instance_name: "{{ aws_rds_01_name }}"
-    db_engine: "{{ aws_rds_dbtype }}"
-    username: "{{ application_rds_username }}"
-    password: "{{ application_rds_password }}"
+    db_engine: "{{ aws_rds_02_dbtype }}"
+    engine_version: "{{ aws_rds_01_engine_version }}"
+    db_name: "{{ aws_rds_01_db_name }}"
+    username: "{{ aws_rds_01_username }}"
+    password: "{{ aws_rds_01_password }}"
     region: "{{ aws_region }}"
     subnet: "application"
     zone: "{{ aws_region }}c"
@@ -66,9 +68,11 @@
   rds:
     command: create
     instance_name: "{{ aws_rds_02_name }}"
-    db_engine: "{{ aws_rds_dbtype }}"
-    username: "{{ application_rds_username }}"
-    password: "{{ application_rds_password }}"
+    db_engine: "{{ aws_rds_02_dbtype }}"
+    engine_version: "{{ aws_rds_02_engine_version }}"
+    db_name: "{{ aws_rds_02_db_name }}"
+    username: "{{ aws_rds_02_username }}"
+    password: "{{ aws_rds_02_password }}"
     region: "{{ aws_region }}"
     subnet: "application"
     zone: "{{ aws_region }}c"
@@ -81,13 +85,20 @@
         Name: "{{ aws_rds_02_name }}"
   when: aws_rds_02_name is defined
 
-- name: "Updating RDS vpc security groups... "
+- name: "Updating RDS instance 01 vpc security groups... "
   rds:
     command: modify
-    instance_name: "{{ item }}"
+    instance_name: "{{ aws_rds_01_name }}"
     region: "{{ aws_region }}"
     subnet:
     vpc_security_groups: "{{ sgroup['security_groups'][0].group_id }}"
-  loop:
-      - "{{ aws_rds_01_name }}"
-      - "{{ aws_rds_02_name }}"
+  when: aws_rds_01_name is defined
+
+- name: "Updating RDS instance 02 vpc security groups... "
+  rds:
+    command: modify
+    instance_name: "{{ aws_rds_02_name }}"
+    region: "{{ aws_region }}"
+    subnet:
+    vpc_security_groups: "{{ sgroup['security_groups'][0].group_id }}"
+  when: aws_rds_02_name is defined
