@@ -39,6 +39,7 @@ aws_vpc_subnets:
 aws_ec2_instance_type: t2.micro
 aws_ec2_name_tag: application
 aws_ec2_type_tag: servers
+aws_ec2_volume_size: "20"
 
 # RDS definitions
 aws_rds_instance_type: db.t2.micro

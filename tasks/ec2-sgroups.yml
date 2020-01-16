@@ -54,9 +54,12 @@
     state: present
     rules:
       - proto: tcp
-        from_port: "{{ aws_rds_port }}"
-        to_port: "{{ aws_rds_port }}"
+        from_port: "{{ item }}"
+        to_port: "{{ item }}"
         cidr_ip: "{{ aws_vpc_cidr_block }}.0.0/20"
+  loop:
+    - "{{ aws_rds_01_port }}"
+    - "{{ aws_rds_02_port }}"
 
 - name: "ICMP for local network security group"
   ec2_group:
