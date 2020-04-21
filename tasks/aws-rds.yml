@@ -1,20 +1,20 @@
 ---
 - name: "Getting VPC id... "
-  ec2_vpc_net_facts:
+  ec2_vpc_net_info:
     region: "{{ aws_region }}"
     filters:
       "tag:Name": "{{ aws_vpc_name }}"
   register: vpc
 
 - name: "Getting subnets id"
-  ec2_vpc_subnet_facts:
+  ec2_vpc_subnet_info:
     region: "{{ aws_region }}"
     filters:
       vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
-  register: subnet
+  register: vpc_subnets
 
 - name: "Getting SGroup id... "
-  ec2_group_facts:
+  ec2_group_info:
     region: "{{ aws_region }}"
     filters:
       vpc-id: "{{ vpc.vpcs[0].vpc_id }}"
@@ -22,7 +22,7 @@
   register: sgroup
 
 - name: "Getting application instance subnet id..."
-  ec2_instance_facts:
+  ec2_instance_info:
     region: "{{ aws_region }}"
     filters:
       "tag:Name": application
@@ -35,23 +35,23 @@
     name: "application"
     description: "DB sgroup for project"
     subnets:
-       - "{{ subnet['subnets'][0].id }}"
-       - "{{ subnet['subnets'][1].id }}"
-       - "{{ subnet['subnets'][2].id }}"
-       - "{{ subnet['subnets'][3].id }}"
-       - "{{ subnet['subnets'][4].id }}"
-       - "{{ subnet['subnets'][5].id }}"
+       - "{{ vpc_subnets['subnets'][0].id }}"
+       - "{{ vpc_subnets['subnets'][1].id }}"
+       - "{{ vpc_subnets['subnets'][2].id }}"
+       - "{{ vpc_subnets['subnets'][3].id }}"
+       - "{{ vpc_subnets['subnets'][4].id }}"
+       - "{{ vpc_subnets['subnets'][5].id }}"
     state: present
 
 - name: "Application RDS instance 01"
   rds:
     command: create
-    instance_name: "{{ aws_rds_01_name }}"
-    db_engine: "{{ aws_rds_02_dbtype }}"
-    engine_version: "{{ aws_rds_01_engine_version }}"
+    instance_name: "{{ aws_rds_01_db_name }}"
+    db_engine: "{{ aws_rds_01_dbtype |default('postgres') }}"
+    engine_version: "{{ aws_rds_01_engine_version |default('11.6') }}"
     db_name: "{{ aws_rds_01_db_name }}"
-    username: "{{ aws_rds_01_username }}"
-    password: "{{ aws_rds_01_password }}"
+    username: "{{ aws_rds_01_db_username }}"
+    password: "{{ aws_rds_01_db_password }}"
     region: "{{ aws_region }}"
     subnet: "application"
     zone: "{{ aws_region }}c"
@@ -61,18 +61,18 @@
     wait: yes
     wait_timeout: 600
     tags:
-        Name: "{{ aws_rds_01_name }}"
-  when: aws_rds_01_name is defined
+        Name: "{{ aws_rds_01_db_name }}"
+  when: aws_rds_01_db_name is defined
 
 - name: "Application RDS instance 02"
   rds:
     command: create
-    instance_name: "{{ aws_rds_02_name }}"
-    db_engine: "{{ aws_rds_02_dbtype }}"
-    engine_version: "{{ aws_rds_02_engine_version }}"
+    instance_name: "{{ aws_rds_02_db_name }}"
+    db_engine: "{{ aws_rds_02_dbtype |default('postgres') }}"
+    engine_version: "{{ aws_rds_02_engine_version |default('11.6') }}"
     db_name: "{{ aws_rds_02_db_name }}"
-    username: "{{ aws_rds_02_username }}"
-    password: "{{ aws_rds_02_password }}"
+    username: "{{ aws_rds_02_db_username }}"
+    password: "{{ aws_rds_02_db_password }}"
     region: "{{ aws_region }}"
     subnet: "application"
     zone: "{{ aws_region }}c"
@@ -82,23 +82,21 @@
     wait: yes
     wait_timeout: 600
     tags:
-        Name: "{{ aws_rds_02_name }}"
-  when: aws_rds_02_name is defined
+        Name: "{{ aws_rds_02_db_name }}"
+  when: aws_rds_02_db_name is defined
 
 - name: "Updating RDS instance 01 vpc security groups... "
   rds:
     command: modify
-    instance_name: "{{ aws_rds_01_name }}"
+    instance_name: "{{ aws_rds_01_db_name }}"
     region: "{{ aws_region }}"
-    subnet:
     vpc_security_groups: "{{ sgroup['security_groups'][0].group_id }}"
-  when: aws_rds_01_name is defined
+  when: aws_rds_01_db_name is defined
 
 - name: "Updating RDS instance 02 vpc security groups... "
   rds:
     command: modify
-    instance_name: "{{ aws_rds_02_name }}"
+    instance_name: "{{ aws_rds_02_db_name }}"
     region: "{{ aws_region }}"
-    subnet:
     vpc_security_groups: "{{ sgroup['security_groups'][0].group_id }}"
-  when: aws_rds_02_name is defined
+  when: aws_rds_02_db_name is defined

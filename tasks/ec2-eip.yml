@@ -1,13 +1,13 @@
 ---
 - name: "Getting application eip facts..."
-  ec2_eip_facts:
+  ec2_eip_info:
     region: "{{ aws_region }}"
     filters:
       tag:Name: "application.project"
   register: eip_fact
 
 - name: "Getting application ec2 facts... "
-  ec2_instance_facts:
+  ec2_instance_info:
     region: "{{ aws_region }}"
     filters:
       "tag:Name": "{{ aws_ec2_name_tag }}"

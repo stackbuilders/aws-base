@@ -28,20 +28,37 @@
   register: igw
 
 - name: "Getting Route table facts"
-  ec2_vpc_route_table_facts:
+  ec2_vpc_route_table_info:
     aws_region: "{{ aws_region }}"
     filters:
       vpc-id: "{{ vpc.vpc.id }}"
   register: vpc_rtb
 
+- name: "Getting subnets id"
+  ec2_vpc_subnet_info:
+    region: "{{ aws_region }}"
+    filters:
+      vpc-id: "{{ vpc.vpc.id }}"
+  register: vpc_subnets
+
+- debug:
+    var: vpc_rtb.route_tables[0].id
+
 - name: "Routes and Subnets for VPC"
   ec2_vpc_route_table:
     aws_region: "{{ aws_region }}"
     vpc_id: "{{ vpc.vpc.id }}"
+    lookup: id
     route_table_id: "{{ vpc_rtb.route_tables[0].id }}"
     tags:
       Name: "project_rtb"
-    subnets: "{{ aws_subnets_id }}"
+    subnets:
+       - "{{ vpc_subnets['subnets'][0].id }}"
+       - "{{ vpc_subnets['subnets'][1].id }}"
+       - "{{ vpc_subnets['subnets'][2].id }}"
+       - "{{ vpc_subnets['subnets'][3].id }}"
+       - "{{ vpc_subnets['subnets'][4].id }}"
+       - "{{ vpc_subnets['subnets'][5].id }}"
     routes:
       - dest: 0.0.0.0/0
         gateway_id: "{{ igw.gateway_id }}"

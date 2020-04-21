@@ -1,6 +1,6 @@
 ---
 - name: "Check if server instance exist and is running... "
-  ec2_instance_facts:
+  ec2_instance_info:
     aws_region: "{{ aws_region }}"
     filters:
       "tag:Type": "{{ aws_ec2_type_tag }}"
@@ -8,7 +8,7 @@
   register: ec2_servers_state
 
 - name: "Getting VPC id... "
-  ec2_vpc_net_facts:
+  ec2_vpc_net_info:
     aws_region: "{{ aws_region }}"
     filters:
       "tag:Name": "{{ aws_vpc_name }}"
@@ -16,7 +16,7 @@
   when: ec2_servers_state['instances'] |list |count == 0
 
 - name: "Getting vpc subnets id... "
-  ec2_vpc_subnet_facts:
+  ec2_vpc_subnet_info:
     aws_region: "{{ aws_region }}"
     filters:
       vpc-id: "{{ vpc.vpcs[0]['id'] }}"
