@@ -90,7 +90,7 @@ Example Playbook
 ```
 -------
 
-MIT
+MIT, see the [LICENSE](LICENSE) file in this repository.
 
 Author Information
 ------------------
