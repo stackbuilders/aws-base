@@ -1,4 +1,4 @@
-Stack Builders - AWS provisioning.
+Stack Builders - AWS base.
 =========
 
 [![Build Status](https://travis-ci.org/stackbuilders/aws-base.svg?branch=master)](https://travis-ci.org/stackbuilders/aws-base)
@@ -8,8 +8,7 @@ Generic AWS resource provisioning.
 Requirements
 ------------
 
-- Ansible 2.6+
-- boto/boto3 
+- Ansible 2.9+
 - awscli
 
 Install
@@ -36,10 +35,11 @@ aws_ec2_type_tag: servers
 
 # RDS database type and port. 
 # See: (ansible rds)[https://docs.ansible.com/ansible/latest/modules/rds_module.html] for more information
-aws_rds_port: 3306
-aws_rds_dbtype: mariadb
-aws_rds_instance_type: db.t2.micro
+aws_rds_0X_port: 3306
+aws_rds_0X_dbtype: mariadb
+aws_rds_0X_instance_type: db.t2.micro
 ```
+Where X is the number of the instance.
 
 AWS Credentials and connection
 ----------------

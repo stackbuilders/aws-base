@@ -3,7 +3,7 @@ galaxy_info:
   description: Common aws provisioning for staging/production development model.
   company: "Stack Builders"
   license: "license (BSD, MIT)"
-  min_ansible_version: 2.6
+  min_ansible_version: 2.9
   platforms:
     - name: EL
       versions:
