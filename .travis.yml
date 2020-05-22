@@ -5,7 +5,7 @@ services: docker
 
 env:
   global: 
-    - ROLE_NAME: aws-provision
+    - ROLE_NAME: aws-base
  
 # Use the new container infrastructure
 sudo: false

@@ -1,7 +1,7 @@
 Stack Builders - AWS provisioning.
 =========
 
-[![Build Status](https://travis-ci.org/speedlight/aws-provision.svg?branch=master)](https://travis-ci.org/speedlight/aws-provision)
+[![Build Status](https://travis-ci.org/stackbuilders/aws-base.svg?branch=master)](https://travis-ci.org/stackbuilders/aws-base)
 
 Generic AWS resource provisioning.
 
