@@ -22,7 +22,7 @@
     state: present
   loop: "{{ ec2_fact['instances']|zip(eip_fact['addresses'])|list }}"
   register: app_eip
- 
+
 - name: "Assigning application eips when created... "
   ec2_eip:
     region: "{{ aws_region }}"
@@ -30,11 +30,11 @@
     state: present
   loop: "{{ ec2_fact['instances'] }}"
   when: eip_fact['addresses'] |list |count == 0
-      
+
 - name: "Setting Name tag in eips..."
   ec2_tag:
     region: "{{ aws_region }}"
     resource: "{{ item.allocation_id  }}"
     tags:
       Name: "application.project"
-  loop: "{{ app_eip['results']|list}}"
+  loop: "{{ app_eip['results']|list }}"
