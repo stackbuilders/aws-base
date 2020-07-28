@@ -1,0 +1,13 @@
+---
+- name: "Ensure aws-mngt keypair exist"
+  ec2_key:
+    name: "{{  aws_keypair }}"
+    aws_region: "{{ aws_region }}"
+    state: present
+  register: aws_mngt_keypair
+
+- name: "Check for keypair locally"
+  stat:
+    path: "{{ aws_keypair }}.pem"
+  delegate_to: localhost
+  register: stat_key

@@ -1,8 +1,8 @@
 ---
 # tasks file for stackbuilders.aws-provision
-- import_tasks: aws-network.yml
+- import_tasks: network.yml
   tags: network
-- import_tasks: aws-ec2.yml
+- import_tasks: ec2.yml
   tags: ec2
-- import_tasks: aws-rds.yml
+- import_tasks: rds.yml
   tags: rds
