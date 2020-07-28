@@ -1,13 +1,11 @@
+---
 galaxy_info:
   author: Carlos Egüez
-  description: Common aws provisioning for staging/production development model.
-  company: "Stack Builders"
-  license: "license (BSD, MIT)"
+  description: Common tasks to provision AWS instances/services
+  company: Stack Builders
+  license: MIT
   min_ansible_version: 2.9
   platforms:
-    - name: EL
-      versions:
-        - all
     - name: Debian
       versions:
         - all
