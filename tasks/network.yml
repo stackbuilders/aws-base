@@ -1,42 +1,42 @@
 ---
 - name: "VPC creation"
   ec2_vpc_net:
-    aws_region: "{{ aws_region }}"
-    name: "{{ aws_vpc_name }}"
-    cidr_block: "{{ aws_vpc_block }}"
+    aws_region: "{{ aws_base_region }}"
+    name: "{{ aws_base_vpc_name }}"
+    cidr_block: "{{ aws_base_vpc_block }}"
     state: present
   register: vpc
 
 - name: "Subnets creation"
   ec2_vpc_subnet:
-    aws_region: "{{ aws_region }}"
-    az: "{{ aws_region }}{{ item.az }}"
+    aws_region: "{{ aws_base_region }}"
+    az: "{{ aws_base_region }}{{ item.az }}"
     vpc_id: "{{ vpc.vpc.id }}"
     cidr: "{{ item.cidr }}"
     resource_tags:
         Name: Project Subnet
     wait: true
-  loop: "{{ aws_vpc_subnets }}"
+  loop: "{{ aws_base_vpc_subnets }}"
 
 - name: "Internet Gateway creation"
   ec2_vpc_igw:
    vpc_id: "{{ vpc.vpc.id }}"
-   aws_region: "{{ aws_region }}"
+   aws_region: "{{ aws_base_region }}"
    state: "present"
    tags:
-     Name: "{{ aws_vpc_igw_name }}"
+     Name: "{{ aws_base_vpc_igw_name }}"
   register: igw
 
 - name: "Getting Route table facts"
   ec2_vpc_route_table_info:
-    aws_region: "{{ aws_region }}"
+    aws_region: "{{ aws_base_region }}"
     filters:
       vpc-id: "{{ vpc.vpc.id }}"
   register: vpc_rtb
 
 - name: "Getting subnets id"
   ec2_vpc_subnet_info:
-    region: "{{ aws_region }}"
+    region: "{{ aws_base_region }}"
     filters:
       vpc-id: "{{ vpc.vpc.id }}"
   register: vpc_subnets
@@ -46,7 +46,7 @@
 
 - name: "Routes and Subnets for VPC"
   ec2_vpc_route_table:
-    aws_region: "{{ aws_region }}"
+    aws_region: "{{ aws_base_region }}"
     vpc_id: "{{ vpc.vpc.id }}"
     lookup: id
     route_table_id: "{{ vpc_rtb.route_tables[0].id }}"

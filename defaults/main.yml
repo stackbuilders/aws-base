@@ -1,45 +1,45 @@
 ---
 # Amazon region where the resources will be provisioned.
-aws_region: us-west-2
+aws_base_region: us-west-2
 
 # Name of the keypair for ssh connection to the ec2 instances.
-aws_keypair: aws-provision
+aws_base_keypair: aws-provision
 
 # Initialize of list arrays
-aws_ec2_sites_ids: []
-aws_ec2_sites_eips: []
-aws_subnets_id: []
+aws_base_ec2_sites_ids: []
+aws_base_ec2_sites_eips: []
+aws_base_subnets_id: []
 
-aws_vpc_name: project_vpc
-aws_vpc_igw_name: project_igw
+aws_base_vpc_name: project_vpc
+aws_base_vpc_igw_name: project_igw
 
 # CIDR address block first two octates
-aws_vpc_cidr_block: "172.17"
+aws_base_vpc_cidr_block: "172.17"
 
 # CIDR block for security groups outbound traffic.
-aws_sgroup_cidr_ip4: "0.0.0.0/0"
-aws_sgroup_cidr_ip6: "::/0"
+aws_base_sgroup_cidr_ip4: "0.0.0.0/0"
+aws_base_sgroup_cidr_ip6: "::/0"
 
 # VPC and subnets cidr blocks
-aws_vpc_block: "{{ aws_vpc_cidr_block }}.0.0/20"
-aws_vpc_subnets:
-  - cidr: "{{ aws_vpc_cidr_block }}.1.0/27"
+aws_base_vpc_block: "{{ aws_base_vpc_cidr_block }}.0.0/20"
+aws_base_vpc_subnets:
+  - cidr: "{{ aws_base_vpc_cidr_block }}.1.0/27"
     az: "a"
-  - cidr: "{{ aws_vpc_cidr_block }}.2.0/27"
+  - cidr: "{{ aws_base_vpc_cidr_block }}.2.0/27"
     az: "a"
-  - cidr: "{{ aws_vpc_cidr_block }}.3.0/27"
+  - cidr: "{{ aws_base_vpc_cidr_block }}.3.0/27"
     az: "b"
-  - cidr: "{{ aws_vpc_cidr_block }}.4.0/27"
+  - cidr: "{{ aws_base_vpc_cidr_block }}.4.0/27"
     az: "b"
-  - cidr: "{{ aws_vpc_cidr_block }}.5.0/27"
+  - cidr: "{{ aws_base_vpc_cidr_block }}.5.0/27"
     az: "c"
-  - cidr: "{{ aws_vpc_cidr_block }}.6.0/27"
+  - cidr: "{{ aws_base_vpc_cidr_block }}.6.0/27"
     az: "c"
 
-aws_ec2_instance_type: t2.micro
-aws_ec2_name_tag: application
-aws_ec2_type_tag: servers
-aws_ec2_volume_size: "20"
+aws_base_ec2_instance_type: t2.micro
+aws_base_ec2_name_tag: application
+aws_base_ec2_type_tag: servers
+aws_base_ec2_volume_size: "20"
 
 # RDS definitions
-aws_rds_instance_type: db.t2.micro
+aws_base_rds_instance_type: db.t2.micro

@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 2.0.0
+- Update variables prefix according to role name.
+
 ## 1.0.1
 
 - Remove empty folders
