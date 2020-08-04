@@ -1,9 +1,9 @@
 ---
 - name: "VPC facts"
   ec2_vpc_net_info:
-    region: "{{ aws_region }}"
+    region: "{{ aws_base_region }}"
     filters:
-      "tag:Name": "{{ aws_vpc_name }}"
+      "tag:Name": "{{ aws_base_vpc_name }}"
   register: vpc
   tags:
     - network
@@ -12,7 +12,7 @@
 
 - name: "http/https security group"
   ec2_group:
-    region: "{{ aws_region }}"
+    region: "{{ aws_base_region }}"
     name: "web"
     description: "IN TCP HTTP/HTTPS"
     vpc_id: "{{ vpc.vpcs[0]['id'] }}"
@@ -23,8 +23,8 @@
       - proto: tcp
         from_port: 80
         to_port: 80
-        cidr_ip: "{{ aws_sgroup_cidr_ip4 }}"
-        cidr_ipv6: "{{ aws_sgroup_cidr_ip6 }}"
+        cidr_ip: "{{ aws_base_sgroup_cidr_ip4 }}"
+        cidr_ipv6: "{{ aws_base_sgroup_cidr_ip6 }}"
       - proto: tcp
         from_port: 443
         to_port: 443
@@ -33,7 +33,7 @@
 
 - name: "SSH security group"
   ec2_group:
-    aws_region: "{{ aws_region }}"
+    aws_region: "{{ aws_base_region }}"
     name: "ssh"
     description: "IN TCP SSH"
     vpc_id: "{{ vpc.vpcs[0]['id'] }}"
@@ -44,12 +44,12 @@
       - proto: tcp
         from_port: 22
         to_port: 22
-        cidr_ip: "{{ aws_sgroup_cidr_ip4 }}"
-        cidr_ipv6: "{{ aws_sgroup_cidr_ip6 }}"
+        cidr_ip: "{{ aws_base_sgroup_cidr_ip4 }}"
+        cidr_ipv6: "{{ aws_base_sgroup_cidr_ip6 }}"
 
 - name: "RDS security group"
   ec2_group:
-    aws_region: "{{ aws_region }}"
+    aws_region: "{{ aws_base_region }}"
     name: "rds"
     description: "LAN RDS"
     vpc_id: "{{ vpc.vpcs[0]['id'] }}"
@@ -60,15 +60,15 @@
       - proto: tcp
         from_port: "{{ item }}"
         to_port: "{{ item }}"
-        cidr_ip: "{{ aws_vpc_cidr_block }}.0.0/20"
+        cidr_ip: "{{ aws_base_vpc_cidr_block }}.0.0/20"
   loop:
-    - "{{ aws_rds_01_port |default(5432) }}"
-    - "{{ aws_rds_02_port |default(5432) }}"
+    - "{{ aws_base_rds_01_port |default(5432) }}"
+    - "{{ aws_base_rds_02_port |default(5432) }}"
   tags: rds
 
 - name: "ICMP for local network security group"
   ec2_group:
-    aws_region: "{{ aws_region }}"
+    aws_region: "{{ aws_base_region }}"
     name: "icmp"
     description: "IN/OUT ICMP"
     vpc_id: "{{ vpc.vpcs[0]['id'] }}"
@@ -79,4 +79,4 @@
       - proto: icmp
         from_port: -1
         to_port: -1
-        cidr_ip: "{{ aws_vpc_cidr_block }}.0.0/21"
+        cidr_ip: "{{ aws_base_vpc_cidr_block }}.0.0/21"

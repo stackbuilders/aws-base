@@ -1,13 +1,18 @@
 ---
 - name: "Ensure aws-mngt keypair exist"
   ec2_key:
-    name: "{{  aws_keypair }}"
-    aws_region: "{{ aws_region }}"
+    name: "{{  aws_base_keypair }}"
+    aws_region: "{{ aws_base_region }}"
     state: present
   register: aws_mngt_keypair
 
 - name: "Check for keypair locally"
   stat:
-    path: "{{ aws_keypair }}.pem"
+    path: "{{ aws_base_keypair }}.pem"
   delegate_to: localhost
   register: stat_key
+
+- name: "Copy private key"
+  copy: content="{{ aws_mngt_keypair.key.private_key }}" dest="{{ aws_keypair }}.pem" mode=0400
+  delegate_to: localhost
+  when: aws_mngt_keypair.changed

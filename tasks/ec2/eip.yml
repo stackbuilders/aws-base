@@ -1,22 +1,22 @@
 ---
 - name: "Getting application eip facts..."
   ec2_eip_info:
-    region: "{{ aws_region }}"
+    region: "{{ aws_base_region }}"
     filters:
       tag:Name: "application.project"
   register: eip_fact
 
 - name: "Getting application ec2 facts... "
   ec2_instance_info:
-    region: "{{ aws_region }}"
+    region: "{{ aws_base_region }}"
     filters:
-      "tag:Name": "{{ aws_ec2_name_tag }}"
+      "tag:Name": "{{ aws_base_ec2_name_tag }}"
       "instance-state-name": "running"
   register: ec2_fact
 
 - name: "Assigning application free eips... "
   ec2_eip:
-    region: "{{ aws_region }}"
+    region: "{{ aws_base_region }}"
     device_id: "{{ item[0].instance_id }}"
     ip: "{{ item[1].public_ip }}"
     state: present
@@ -25,7 +25,7 @@
 
 - name: "Assigning application eips when created... "
   ec2_eip:
-    region: "{{ aws_region }}"
+    region: "{{ aws_base_region }}"
     device_id: "{{ item.instance_id }}"
     state: present
   loop: "{{ ec2_fact['instances'] }}"
@@ -33,7 +33,7 @@
 
 - name: "Setting Name tag in eips..."
   ec2_tag:
-    region: "{{ aws_region }}"
+    region: "{{ aws_base_region }}"
     resource: "{{ item.allocation_id  }}"
     tags:
       Name: "application.project"
