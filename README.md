@@ -34,7 +34,7 @@ Example playbook:
     aws_base_rds_dbtype: postgres
 
   roles:
-    - role: stackbuilders.aws-base
+    - role: stackbuilders.aws_base
 ```
 
 ## Role Variables
