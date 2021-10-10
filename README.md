@@ -14,7 +14,7 @@ Generic AWS resource provisioning.
 Install Ansible role:
 
 ```sh
-ansible-galaxy install stackbuilders.aws-base
+ansible-galaxy install stackbuilders.aws_base
 ```
 
 Example playbook:
