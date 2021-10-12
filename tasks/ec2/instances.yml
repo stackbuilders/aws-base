@@ -23,6 +23,13 @@
   register: vpc_subnets
   when: ec2_servers_state['instances'] |list |count == 0
 
+- name: "Lookup ami facts"
+  ec2_ami_info:
+    image_id: "{{ aws_base_ec2_ami }}"
+    region: "{{ aws_base_region }}"
+  register: ami_info
+  when: ec2_servers_state['instances'] |list |count == 0
+
 - name: "server instance creation... "
   ec2:
     aws_region: "{{ aws_base_region }}"
@@ -39,7 +46,7 @@
     group: ['ssh', 'web', 'icmp']
     vpc_subnet_id: "{{ vpc_subnets['subnets'][0].id }}"
     volumes:
-      - device_name: xvda
+      - device_name: "{{ ami_info.images[0].root_device_name }}"
         volume_type: gp2
         volume_size: "{{ aws_base_ec2_volume_size }}"
     wait: true
