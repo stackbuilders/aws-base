@@ -7,6 +7,11 @@
       instance-state-name: running
   register: ec2_servers_state
 
+- name: "Lookup ec2 ami ssm parameter"
+  set_fact:
+    aws_base_ec2_ami: "{{ lookup('aws_ssm', aws_base_ec2_ami_lookup_key, region=aws_base_region) }}"
+  when: aws_base_ec2_ami is not defined and ec2_servers_state['instances'] |list |count == 0
+
 - name: "Getting VPC id... "
   ec2_vpc_net_info:
     aws_region: "{{ aws_region }}"

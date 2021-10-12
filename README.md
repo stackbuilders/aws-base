@@ -90,13 +90,6 @@ at run time:
 AWS_PROFILE=project ansible-playbook playbooks/myplaybook.yml
 ```
 
-**NOTE:** We MUST set the `aws_ec2_ami` value like the following as this
-depends on the region:
-
-```sh
-aws_ec2_ami: ami-09d31fc66dcb58522
-```
-
 ## License
 
 MIT, see the [LICENSE](LICENSE) file in this repository.
