@@ -43,3 +43,6 @@ aws_base_ec2_volume_size: "20"
 
 # RDS definitions
 aws_base_rds_instance_type: db.t2.micro
+
+# AWS SSM key to use if aws_base_ec2_ami is not set
+aws_base_ec2_ami_lookup_key: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
