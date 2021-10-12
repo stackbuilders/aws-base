@@ -24,14 +24,14 @@ Example playbook:
   connection: local
   gather_facts: false
   vars:
-    aws_keypair: aws-keypair
-    aws_region: us-east-1
-    aws_ec2_ami: ami-09e31fc65dcb585aa
+    aws_base_keypair: aws-keypair
+    aws_base_region: us-east-1
+    aws_base_ec2_ami: ami-09e31fc65dcb585aa
     application_rds_username: "appadmin"
     application_rds_password: "1q2w3e4r5t"
     create_ec2: true
-    aws_rds_port: 5432
-    aws_rds_dbtype: postgres
+    aws_base_rds_port: 5432
+    aws_base_rds_dbtype: postgres
 
   roles:
     - role: stackbuilders.aws-base
@@ -44,21 +44,21 @@ defaults/main.yml
 
 ```sh
 # Amazon region where the resources will be provisioned.
-aws_region: us-west-2
+aws_base_region: us-west-2
 
 # VPC network configuration.
-aws_vpc_name: project_vpc
-aws_vpc_cidr_block: "172.17"
-aws_vpc_block: "{{ aws_cidr_block }}.0.0/20"
+aws_base_vpc_name: project_vpc
+aws_base_vpc_cidr_block: "172.17"
+aws_base_vpc_block: "{{ aws_cidr_block }}.0.0/20"
 
 # EC2 type tag to set for the instances to create.
-aws_ec2_type_tag: servers
+aws_base_ec2_type_tag: servers
 
 # RDS database type and port.
 # See: (ansible rds)[https://docs.ansible.com/ansible/latest/modules/rds_module.html] for more information
-aws_rds_0X_port: 3306
-aws_rds_0X_dbtype: mariadb
-aws_rds_0X_instance_type: db.t2.micro
+aws_base_rds_0X_port: 3306
+aws_base_rds_0X_dbtype: mariadb
+aws_base_rds_0X_instance_type: db.t2.micro
 ```
 
 Where X is the number of the instance.
