@@ -1,5 +1,7 @@
 # Stack Builders - AWS base
 
+**Note:** This repository has been archived and is no longer actively maintained or accepting contributions. The code, issues, and pull requests are still available for reference, but no further updates or modifications will be made.
+
 [![Build Status](https://travis-ci.org/stackbuilders/aws-base.svg?branch=master)](https://travis-ci.org/stackbuilders/aws-base)
 
 Generic AWS resource provisioning.
