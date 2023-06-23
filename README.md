@@ -1,6 +1,6 @@
-# Stack Builders - AWS base
+**Warning:** This library has been deprecated and is no longer maintained. It will not receive any further security patches, features, or bug fixes and is preserved here at GitHub for archival purposes. If you want to use it, we suggest forking the repository and auditing the codebase before use. For more information contact us at info@stackbuilders.com.
 
-**Note:** This repository has been archived and is no longer actively maintained or accepting contributions. The code, issues, and pull requests are still available for reference, but no further updates or modifications will be made.
+# Stack Builders - AWS base
 
 [![Build Status](https://travis-ci.org/stackbuilders/aws-base.svg?branch=master)](https://travis-ci.org/stackbuilders/aws-base)
 
